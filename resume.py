@@ -91,6 +91,9 @@ def tex(lines, contact_lines, *args):
     # just going to hardcode the two most common link formats for now so people
     # can put links in their contact info
     def replace_links(line):
+        if '!' in line:
+            return re.sub(r"!\[([^\]]+)\]\(([^\)]+)\)", r"\includegraphics[height=2cm]{\2}", line)
+
         line = re.sub(r"<([^:]+@[^:]+?)>", r"\href{mailto:\1}{\1}", line)
         line = re.sub(r"<(http.+?)>", r"\url{\1}", line)
         return re.sub(r"\[([^\]]+)\]\(([^\)]+)\)", r"\href{\2}{\1}", line)
@@ -129,6 +132,9 @@ def html(lines, contact_lines, *args):
 
     gravatar = None
     for line in contact_lines:
+        if '!' in line:
+            # If gravatar given, ignore the one from gravatar.com
+            break
         if '@' in line and '--no-gravatar' not in args:
             gravatar = GRAVATAR.format(
                 hash=hashlib.md5(line.lower().strip('<>')).hexdigest())
